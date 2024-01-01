@@ -11,7 +11,10 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModal: Model<User>, private configService: ConfigService) {}
+  constructor(
+    @InjectModel(User.name) private userModal: Model<User>,
+    private configService: ConfigService,
+  ) {}
 
   async createUser(userData: CreateUserDto) {
     const userExisit = await this.userModal.findOne({
@@ -44,5 +47,19 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async updateUser(id: string, userArgs: Partial<User>) {
+    const isIdValid = Types.ObjectId.isValid(id);
+
+    if (!isIdValid) throw new NotFoundException("USer was not found");
+
+    const user = await this.userModal.findById(id);
+
+    if (!user) throw new NotFoundException("USer was not found");
+
+    Object.assign(user, userArgs);
+
+    await user.save();
   }
 }
