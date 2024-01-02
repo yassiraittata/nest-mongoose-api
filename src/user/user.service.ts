@@ -11,21 +11,19 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectModel(User.name) private userModal: Model<User>,
-    private configService: ConfigService,
-  ) {}
+  constructor(@InjectModel(User.name) private userModal: Model<User>) {}
 
   async createUser(userData: CreateUserDto) {
     const userExisit = await this.userModal.findOne({
       username: userData.username,
     });
     if (userExisit) {
-      return new BadRequestException("User already exists");
+      throw new BadRequestException("User already exists");
     }
 
     const user = new this.userModal(userData);
     await user.save();
+
     return user;
   }
 
@@ -56,10 +54,19 @@ export class UserService {
 
     const user = await this.userModal.findById(id);
 
-    if (!user) throw new NotFoundException("USer was not found");
+    if (!user) throw new NotFoundException("User was not found");
 
     Object.assign(user, userArgs);
 
     await user.save();
+
+    return user;
+  }
+
+  async deleteUser(id: string) {
+    const isIdValid = Types.ObjectId.isValid(id);
+    if (!isIdValid) throw new NotFoundException("USer was not found");
+
+    await this.userModal.deleteOne({ id });
   }
 }

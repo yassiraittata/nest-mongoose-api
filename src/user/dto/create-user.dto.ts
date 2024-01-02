@@ -7,9 +7,10 @@ export class CreateUserDto {
 
   @IsString()
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsString()
-  @IsOptional()
-  avatarUrl: string;
+  @IsNotEmpty()
+  password: string;
 }
