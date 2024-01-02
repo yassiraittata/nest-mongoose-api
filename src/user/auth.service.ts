@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./dto";
 import { InjectModel } from "@nestjs/mongoose";
@@ -20,32 +24,75 @@ export class AuthService {
       username: userData.username,
     });
     if (userExist) {
-      throw new BadRequestException("User already exists");
+      throw new BadRequestException("User already exists!");
     }
 
+    // hash the password
     const hash = await this.hashData(userData.password);
 
+    // create the user
     const user = new this.userModal({
       username: userData.username,
       email: userData.email,
       password: hash,
     });
 
+    // create tokens
     const { access_token, refresh_token } = await this.signToken(
       user.id,
       user.username,
       user.email,
     );
 
+    // hash ans store the token
     const hashedRt = await this.hashData(refresh_token);
 
     user.refresh_token = hashedRt;
-
     await user.save();
+
+    // return tokens
     return { access_token, refresh_token };
   }
 
-  signin() {}
+  async signin(userData: CreateUserDto) {
+    const user = await this.userModal.findOne({ email: userData.email });
+    if (!user) {
+      throw new NotFoundException("User was not found");
+    }
+
+    const isPwMatch = await bcrypt.compare(userData.password, user.password);
+
+    if (!isPwMatch) {
+      throw new NotFoundException("Incorrect password!");
+    }
+
+    // create tokens
+    const { access_token, refresh_token } = await this.signToken(
+      user.id,
+      user.username,
+      user.email,
+    );
+
+    // hash ans store the token
+    const hashedRt = await this.hashData(refresh_token);
+
+    user.refresh_token = hashedRt;
+    await user.save();
+
+    return {
+      access_token,
+      refresh_token,
+      user: user.toObject({
+        transform: (doc, ret, options) => {
+          delete ret.password;
+          delete ret.refresh_token;
+          ret.id = ret._id;
+          delete ret._id;
+          return ret;
+        },
+      }),
+    };
+  }
 
   logout() {}
 

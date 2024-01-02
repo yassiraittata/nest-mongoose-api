@@ -13,7 +13,10 @@ import { AuthService } from "./auth.service";
 
 @Controller("users")
 export class UserController {
-  constructor(private readonly userService: UserService, private readonly authService: AuthService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
   // @Post('')
   // createUser(@Body() userData: CreateUserDto) {
@@ -22,7 +25,12 @@ export class UserController {
 
   @Post("signup")
   createUser(@Body() userData: CreateUserDto) {
-    return this.authService.signup(userData)
+    return this.authService.signup(userData);
+  }
+
+  @Post("signin")
+  singin(@Body() userData: CreateUserDto) {
+    return this.authService.signin(userData);
   }
 
   @Get()
