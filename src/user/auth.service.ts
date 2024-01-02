@@ -1,12 +1,14 @@
 import {
-  BadRequestException,
   Injectable,
+  BadRequestException,
+  ForbiddenException,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto } from "./dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { User } from "src/schemas/user.schema";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
@@ -94,7 +96,54 @@ export class AuthService {
     };
   }
 
-  logout() {}
+  async logout(userId: string) {
+    const validId = Types.ObjectId.isValid(userId);
+
+    if (!validId) {
+      throw new NotFoundException("No user was found! id validation");
+    }
+
+    const user = await this.userModal.findOne({
+      _id: userId,
+      refresh_token: { $ne: null },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    user.refresh_token = null;
+
+    await user.save();
+  }
+
+  async refreshToken(userId: string, token: string) {
+    const validId = Types.ObjectId.isValid(userId);
+
+    if (!validId) {
+      throw new NotFoundException("No user was found! id validation");
+    }
+
+    const user = await this.userModal.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException("No user was found! id validation");
+    }
+
+    const rtMatch = await bcrypt.compare(token, user.refresh_token);
+
+    if (!rtMatch) {
+      throw new ForbiddenException("Unauthenticated!");
+    }
+
+    const { access_token, refresh_token } = await this.signToken(
+      user.id,
+      user.username,
+      user.email,
+    );
+
+    return { access_token, refresh_token };
+  }
 
   private hashData(data: string): Promise<string> {
     return bcrypt.hash(data, 12);
