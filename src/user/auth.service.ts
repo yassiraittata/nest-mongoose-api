@@ -130,6 +130,7 @@ export class AuthService {
       throw new NotFoundException("No user was found! id validation");
     }
 
+
     const rtMatch = await bcrypt.compare(token, user.refresh_token);
 
     if (!rtMatch) {
@@ -141,6 +142,12 @@ export class AuthService {
       user.username,
       user.email,
     );
+
+    const hashRt = await this.hashData(refresh_token);
+
+    user.refresh_token = hashRt;
+
+    await user.save();
 
     return { access_token, refresh_token };
   }

@@ -53,9 +53,9 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   refreshToken(
     @CurrentUser("sub") userId: string,
-    @CurrentUser("sub") user: User,
+    @CurrentUser("refreshToken") token: string,
   ) {
-    return this.authService.refreshToken(userId, user.refresh_token);
+    return this.authService.refreshToken(userId, token);
   }
 
   // @Get()
