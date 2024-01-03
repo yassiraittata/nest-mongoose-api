@@ -4,6 +4,7 @@ import { UserModule } from "./user/user.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { AtGuard } from "./common/guards";
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AtGuard } from "./common/guards";
       isGlobal: true,
     }),
     UserModule,
+    PostsModule,
   ],
   controllers: [],
   providers: [
