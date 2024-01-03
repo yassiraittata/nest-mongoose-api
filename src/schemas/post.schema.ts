@@ -11,7 +11,7 @@ export class Post {
   text: string;
 
   @Prop({ type: mongoose.Types.ObjectId, ref: "User" })
-  creator: User;
+  creator: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
