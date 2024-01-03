@@ -7,7 +7,7 @@ import { Post } from "src/schemas/post.schema";
 export class PostsService {
   constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}
 
-  createPost() {
-    this.postModel.find({})
+  createPost(title: string, text: string, userId: string) {
+    this.postModel.find({});
   }
 }
