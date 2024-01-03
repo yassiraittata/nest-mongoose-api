@@ -48,5 +48,17 @@ export class PostsService {
     await post.save();
   }
 
-  async deletePost(title: string, text: string, userId: string) {}
+  async deletePost(postId: string, userId: string) {
+    const isIdValid = Types.ObjectId.isValid(postId);
+    if (!isIdValid) throw new NotFoundException("No post was found");
+
+    const post = await this.postModel.findById(postId);
+    if (!post) throw new NotFoundException("No post was found");
+
+    if (post.creator !== userId) {
+      throw new UnauthorizedException("You can't delete this post");
+    }
+
+    this.postModel.findByIdAndDelete(postId);
+  }
 }
