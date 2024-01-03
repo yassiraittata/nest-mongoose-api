@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -31,5 +32,11 @@ export class PostsController {
     @CurrentUser("sub") userId: string,
   ) {
     return this.postService.updatePost(id, userId, postData);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get("user")
+  getUserPosts(@CurrentUser("sub") userId: string) {
+    return this.postService.getPostsByUser(userId);
   }
 }
