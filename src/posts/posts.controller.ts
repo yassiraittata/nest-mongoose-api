@@ -10,10 +10,14 @@ import {
 import { CreatePostDto, UpdatePostDto } from "./dto";
 import { CurrentUser } from "src/common/decorators";
 import { PostsService } from "./posts.service";
+import { PreferenceService } from "./preferenc.service";
 
 @Controller("posts")
 export class PostsController {
-  constructor(private readonly postService: PostsService) {}
+  constructor(
+    private readonly postService: PostsService,
+    private readonly preferenceService: PreferenceService,
+  ) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
@@ -38,5 +42,11 @@ export class PostsController {
   @Get("user")
   getUserPosts(@CurrentUser("sub") userId: string) {
     return this.postService.getPostsByUser(userId);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get("like/:id")
+  likePost(@Param("id") postId: string, @CurrentUser("sub") userId: string) {
+    return this.preferenceService.likePost(postId, userId);
   }
 }
