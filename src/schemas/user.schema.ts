@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose from "mongoose";
 
 @Schema({ timestamps: true })
 export class User {
@@ -13,6 +14,9 @@ export class User {
 
   @Prop()
   refresh_token?: string;
+
+  @Prop([{ type: mongoose.Types.ObjectId, ref: "Post" }])
+  prefrencePosts: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

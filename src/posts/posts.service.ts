@@ -22,8 +22,9 @@ export class PostsService {
     return newPost;
   }
 
-  async getAllPosts(userId: string) {
+  async getAllPosts() {
     const posts = await this.postModel.find();
+
     return posts;
   }
 
