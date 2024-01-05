@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
 } from "@nestjs/common";
 import { CreatePostDto, UpdatePostDto } from "./dto";
@@ -38,6 +40,11 @@ export class PostsController {
     return this.postService.updatePost(id, userId, postData);
   }
 
+  @Delete(":id")
+  deletePost(@Param("id") postId: string, @CurrentUser("sub") userId: string) {
+    return this.postService.deletePost(postId, userId);
+  }
+
   @HttpCode(HttpStatus.OK)
   @Get("user")
   getUserPosts(@CurrentUser("sub") userId: string) {
@@ -45,8 +52,15 @@ export class PostsController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get("like/:id")
+  @Patch("like/:id")
   likePost(@Param("id") postId: string, @CurrentUser("sub") userId: string) {
+    console.log(userId);
     return this.preferenceService.likePost(postId, userId);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get("user/liked")
+  getLikedPosts(@CurrentUser("sub") userId: string) {
+    return this.preferenceService.getLikedPosts(userId);
   }
 }

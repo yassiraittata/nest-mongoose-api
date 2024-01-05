@@ -19,17 +19,26 @@ export class PreferenceService {
     if (!isUserIdValid) throw new NotFoundException("No User was found");
 
     const post = await this.postModel.findById(postId);
-    const user = await this.postModel.findById(userId);
+    const user = await this.userModel.findById(userId);
 
     if (!post) throw new NotFoundException("Post was not found!");
     if (!user) throw new NotFoundException("User was not found!");
 
-    user.likes.push(post.id);
+    const isUserLikedPost = user.prefrencePosts.find((el) => el === post.id);
+    const isPostLiked = post.likes.find((el) => el === user.id);
 
-    await user.save();
+    if (!isUserLikedPost) {
+      user.prefrencePosts.push(post.id);
+      await user.save();
+    }
+
+    if (!isPostLiked) {
+      post.likes.push(user.id);
+      await post.save();
+    }
   }
 
-  async getLikedPost(userId: string) {
+  async getLikedPosts(userId: string) {
     const isUserIdValid = Types.ObjectId.isValid(userId);
     if (!isUserIdValid) throw new NotFoundException("No User was found");
 
