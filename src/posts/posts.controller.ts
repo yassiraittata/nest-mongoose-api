@@ -54,8 +54,13 @@ export class PostsController {
   @HttpCode(HttpStatus.OK)
   @Patch("like/:id")
   likePost(@Param("id") postId: string, @CurrentUser("sub") userId: string) {
-    console.log(userId);
     return this.preferenceService.likePost(postId, userId);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch("unlike/:id")
+  unlikePost(@Param("id") postId: string, @CurrentUser("sub") userId: string) {
+    return this.preferenceService.unlikePost(postId, userId);
   }
 
   @HttpCode(HttpStatus.OK)
