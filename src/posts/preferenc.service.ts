@@ -75,4 +75,31 @@ export class PreferenceService {
 
     return posts;
   }
+
+  async savePost(postId: string, userId: string) {
+    const isPostIdValid = Types.ObjectId.isValid(postId);
+    if (!isPostIdValid) throw new NotFoundException("No post was found");
+
+    const isUserIdValid = Types.ObjectId.isValid(userId);
+    if (!isUserIdValid) throw new NotFoundException("No User was found");
+
+    const post = await this.postModel.findById(postId);
+    const user = await this.userModel.findById(userId);
+
+    if (!post) throw new NotFoundException("Post was not found!");
+    if (!user) throw new NotFoundException("User was not found!");
+
+    const isUserSavedPost = user.savedPosts.find((el) => el === post.id);
+    const isPostSaved = post.savedBy.find((el) => el === user.id);
+
+    if (!isUserSavedPost) {
+      user.savedPosts.push(post.id);
+      await user.save();
+    }
+
+    if (!isPostSaved) {
+      post.savedBy.push(user.id);
+      await post.save();
+    }
+  }
 }
