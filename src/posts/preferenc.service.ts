@@ -102,4 +102,16 @@ export class PreferenceService {
       await post.save();
     }
   }
+
+  async getSavedPosts(userId: string) {
+    const isUserIdValid = Types.ObjectId.isValid(userId);
+    if (!isUserIdValid) throw new NotFoundException("No User was found");
+
+    const user = await this.userModel.findById(userId);
+    if (!user) throw new NotFoundException("User was not found!");
+
+    const posts = await this.postModel.find().where("_id").in(user.savedPosts);
+
+    return posts;
+  }
 }
