@@ -14,6 +14,9 @@ export class Post {
 
   @Prop([{ type: mongoose.Types.ObjectId, ref: "User" }])
   likes: string[];
+
+  @Prop([{ type: mongoose.Types.ObjectId, ref: "User" }])
+  savedBy: string[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
