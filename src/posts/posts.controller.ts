@@ -68,4 +68,9 @@ export class PostsController {
   getLikedPosts(@CurrentUser("sub") userId: string) {
     return this.preferenceService.getLikedPosts(userId);
   }
+
+  @Patch()
+  savePost(@Param("id") postId: string, @CurrentUser("sub") userId: string) {
+    return this.preferenceService.savePost(postId, userId);
+  }
 }
