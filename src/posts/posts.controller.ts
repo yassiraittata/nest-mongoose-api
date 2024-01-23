@@ -73,4 +73,10 @@ export class PostsController {
   savePost(@Param("id") postId: string, @CurrentUser("sub") userId: string) {
     return this.preferenceService.savePost(postId, userId);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Get("user/saved")
+  getSavedPosts(@CurrentUser("sub") userId: string) {
+    return this.preferenceService.getSavedPosts(userId);
+  }
 }
