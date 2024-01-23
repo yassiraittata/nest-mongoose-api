@@ -17,6 +17,9 @@ export class User {
 
   @Prop([{ type: mongoose.Types.ObjectId, ref: "Post" }])
   prefrencePosts: string[];
+
+  @Prop([{ type: mongoose.Types.ObjectId, ref: "Post" }])
+  savedPosts: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
